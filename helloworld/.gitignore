@@ -1,0 +1,9 @@
+# Compiled class files and maven target folder
+*.class
+target/
+
+.settings/*
+.classpath
+.project
+
+workbench-state.*
