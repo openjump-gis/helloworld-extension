@@ -14,6 +14,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 public class HelloWorldPlugin extends AbstractPlugIn {
 
   private static final Icon ICON = new ImageIcon("attention.png");
+  private static final String MESSAGE = "Hello World!";
   private WorkbenchContext workbenchContext;
 
   @Override
@@ -23,18 +24,22 @@ public class HelloWorldPlugin extends AbstractPlugIn {
     // save workbenchcontext for later use
     this.workbenchContext = context.getWorkbenchContext();
 
-    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.PLUGINS });
+    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.PLUGINS, "Example" });
   }
 
   @Override
   public boolean execute(PlugInContext context) throws Exception {
+    return showMessage(context, MESSAGE);
+  }
+
+  protected boolean showMessage(PlugInContext context, String message) throws Exception {
     context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-    context.getWorkbenchFrame().getOutputFrame().addText("Hello World!");
+    context.getWorkbenchFrame().getOutputFrame().addText(message);
     context.getWorkbenchFrame().getOutputFrame().surface();
 
     return true;
   }
-
+  
   /**
    * return a (Multi)Enablecheck here if executing the plugin needs preconditions
    * to be met. for demonstrations purposes we add the following conditions
