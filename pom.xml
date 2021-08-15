@@ -5,26 +5,27 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.openjump</groupId>
-  <artifactId>helloworld</artifactId>
+  <groupId>org.openjump.example</groupId>
+  <artifactId>helloworld-extension</artifactId>
   <version>2.0.0</version>
-
-  <name>HelloWorldExtension</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
-
+  <name>Hello World Extension</name>
+  <url>https://github.com/openjump-gis/helloworld-extension</url>
+  <description>A collection of plugins installed via extension to introduce OpenJUMP plugin API</description>
+  <!-- currently OJ2 min. jre requirement is java8 [08.2021] -->
   <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
   <repositories>
+    <!-- comment/modify if you want to compile against a locally checked 
+      out OJ source -->
     <repository>
       <id>ojrepo</id>
       <name>OpenJUMP Snapshot Repository</name>
       <url>https://ojrepo.soldin.de/</url>
     </repository>
-		<!-- MvnRepository holds a list of recent repos https://mvnrepository.com/repos -->
+    <!-- MvnRepository holds a list of recent repos https://mvnrepository.com/repos -->
     <repository>
       <id>Maven Central group</id>
       <name>Maven Central group Repository</name>
@@ -33,12 +34,22 @@
   </repositories>
 
   <dependencies>
+    <!-- add support for junit5 style testing -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.7.2</version>
       <scope>test</scope>
     </dependency>
+    <!-- add support for junit4 style tests -->
+    <!-- uncomment if you want to add old style tests
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <version>5.7.2</version>
+      <scope>test</scope>
+    </dependency>
+    -->
     <dependency>
       <groupId>org.openjump</groupId>
       <artifactId>OpenJUMP</artifactId>
@@ -47,32 +58,59 @@
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-      <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    <plugins>
+      <!-- package extension zip using distro-zip.xml definition -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
+        <executions>
+          <execution>
+            <id>distro zip</id>
+            <phase>package</phase>
+            <configuration>
+              <descriptors>
+                <descriptor>distro-zip.xml</descriptor>
+              </descriptors>
+            </configuration>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- create checksums needed to if extension is supposed to be added to OJ2 pom.xml -->
+      <plugin>
+        <groupId>net.nicoulaj.maven.plugins</groupId>
+        <artifactId>checksum-maven-plugin</artifactId>
+        <version>1.10</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>files</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <fileSets>
+                <fileSet>
+                  <directory>${project.build.directory}</directory>
+                  <includes>
+                    <include>${project.build.finalName}.zip</include>
+                  </includes>
+                </fileSet>
+              </fileSets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <!-- enforce a version supporting junit5 -->
+        <version>3.0.0-M5</version>
+      </plugin>
+    </plugins>
   </build>
 </project>

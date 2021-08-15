@@ -7,8 +7,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 public class HelloWorldExtension extends Extension {
 
-  public static I18N I18N = com.vividsolutions.jump.I18N.getInstance("org.openjump.example");
-
   @Override
   public void configure(PlugInContext context) throws Exception {
     PlugIn p = new HelloWorldPlugin();
@@ -17,6 +15,18 @@ public class HelloWorldExtension extends Extension {
     // installing menu item is done in initialize() above, but it may happen here as well
     
     new InternationalizedHelloWorldPlugin().initialize(context);
+  }
+
+  public static String i18n( String key, Object... objects ) {
+    return I18N.getInstance("org.openjump.example").get(key, objects);
+  }
+
+  /**
+   * Just an example method used for the example testing
+   * @return true
+   */
+  public static boolean returnTrue() {
+    return true;
   }
 
 }
